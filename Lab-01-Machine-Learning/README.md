@@ -1,49 +1,55 @@
 # Lab 01: Sentiment Analysis Using Traditional Machine Learning
 
+**Module:** PUSL3205 – Large Language Models and Generative AI  
+**Notebook:** [Lab_Sheet_1.ipynb](Lab_Sheet_1.ipynb)[cite: 33]  
+**Dataset Source:** [UCI Machine Learning Repository – Sentiment Labelled Sentences (Dataset 331)](https://archive.ics.uci.edu/dataset/331/sentiment%2Blabelled%2Bsentences)[cite: 5]
+
+---
+
 ## Laboratory Session
-- **Module:** PUSL3205 – Large Language Models and Generative AI
+- **Module Code & Title:** PUSL3205 – Large Language Models and Generative AI[cite: 4, 5]
 - **Laboratory Session:** Lab 01 – Sentiment Analysis Using Traditional Machine Learning
-- **Notebook:** `Lab_Sheet_1.ipynb`
+- **Environment:** Google Colab / Jupyter Notebook (`Lab_Sheet_1.ipynb`)[cite: 31, 33]
+
+---
 
 ## Objective
-To practice basic Natural Language Processing (NLP) tasks—including text preprocessing, Bag-of-Words feature representation, and training and evaluating traditional machine learning classifiers (Logistic Regression and Linear SVM) on labelled sentiment sentences—to establish a baseline before exploring modern contextual language models and LLMs.
+To practise foundational Natural Language Processing (NLP) tasks—including text preprocessing, Bag-of-Words feature representation, and training/evaluating traditional machine learning classifiers (Logistic Regression and Linear SVM) on labelled sentiment text—to establish a baseline before studying transformer architectures and large language models[cite: 4, 5].
+
+---
 
 ## Tasks and Implementation
-1. **Load Dataset:** Downloaded and loaded the UCI Sentiment Labelled Sentences dataset (Amazon, IMDB, and Yelp reviews) into a `pandas` DataFrame.
-2. **Text Preprocessing:** Converted text to lowercase, removed non-alphabetic characters and punctuation, collapsed extra whitespace into a `clean_text` column, and removed rows that became empty after cleaning.
-3. **Exploratory Data Analysis (EDA):** Checked class distribution across positive (`1`) and negative (`0`) sentiment labels.
-4. **Train/Test Split:** Split the cleaned dataset into training and testing sets using an 80/20 stratified split (`random_state=42`).
-5. **Bag-of-Words Representation:** Converted text into numeric Bag-of-Words features using `CountVectorizer`, fitting on training data and transforming test data.
-6. **Model Training:** Trained **Logistic Regression** and **Linear SVM** (`LinearSVC`) classifiers on the training features.
-7. **Model Evaluation:** Evaluated both models on the test set using Accuracy, Precision, Recall, F1 Score, and confusion matrices.
-8. **New Sentence Testing:** Tested both models on unseen sample sentences to observe sentiment predictions.
 
-## Results and Evidence
+| Step | Task | Implementation Summary |
+| :--- | :--- | :--- |
+| 1 | Load Dataset | Downloaded the archived dataset zip file from the UCI source, extracted the Amazon, IMDB, and Yelp review files, and merged them into a `pandas` DataFrame. |
+| 2 | Text Preprocessing | Lowercased text, removed punctuation and non-letter characters via regular expressions, collapsed extra whitespace into `clean_text`, and dropped rows that became empty after cleaning[cite: 5]. |
+| 3 | Exploratory Data Analysis | Checked sentiment class counts, source breakdown (Amazon, IMDB, Yelp), and top frequent words per sentiment class[cite: 5]. |
+| 4 | Train/Test Split | Split the cleaned text and labels into training and test sets using an 80/20 stratified split (`random_state=42`)[cite: 5]. |
+| 5 | Bag-of-Words Features | Generated token-count feature vectors using `CountVectorizer`, fitting on training data and transforming test data[cite: 5]. |
+| 6 | Model Training | Trained **Logistic Regression** (`max_iter=1000`, `random_state=42`) and **Linear SVM** (`LinearSVC`, `random_state=42`) classifiers on the training features[cite: 5]. |
+| 7 | Model Evaluation | Computed Accuracy, Precision, Recall, and F1 Score on the test set and visualised confusion matrices and model comparisons[cite: 5, 34]. |
+| 8 | New Sentence Testing | Passed unseen test sentences (including negation and tricky phrasing) through the trained models to observe predictions[cite: 5, 17]. |
 
-### Evaluation Metrics (Test Set)
-| Model | Accuracy | Precision | Recall | F1 Score |
-| :--- | :--- | :--- | :--- | :--- |
-| Logistic Regression | 0.84 | 0.8387 | 0.8448 | 0.8417 |
-| Linear SVM | 0.82 | 0.8069 | 0.8448 | 0.8254 |
+### Key Preprocessing & Modelling Code
+```python
+def clean_text(raw):
+  if pd.isna(raw):
+    return ""
+  txt = str(raw).lower()
+  txt = re_non_alpha.sub(" ", txt)
+  txt = re_multi_space.sub(" ", txt).strip()
+  return txt
 
-### New Sentence Predictions
-- `"I really loved this movie, it was great!"` -> LR: Pos | SVM: Pos
-- `"The food was cold and service was bad."` -> LR: Neg | SVM: Neg
-- `"This phone has an amazing camera."` -> LR: Pos | SVM: Pos
-- `"I would not recommend this to anyone."` -> LR: Neg | SVM: Neg
 
-### Class Distribution
-![Class Distribution](class_distribution.png)
+X_train, X_test, y_train, y_test = train_test_split(
+    data["clean_text"],
+    data["label"],
+    test_size=0.2,
+    random_state=42,
+    stratify=data["label"],
+)
 
-### Confusion Matrices
-![Confusion Matrices](confusion_matrices.png)
-
-## Observations
-- The dataset shows a balanced class distribution across negative (`0`) and positive (`1`) reviews.
-- On this split, Logistic Regression achieved slightly higher accuracy (`0.84`) and F1 score (`0.8417`) than Linear SVM (`0.82` accuracy, `0.8254` F1 score), while both achieved the same recall (`0.8448`).
-- Bag-of-Words models rely on word frequency rather than full contextual meaning or word order, which can be limiting on complex phrasing, negation, or sarcasm.
-
-## Learning Outcomes
-- Built a traditional NLP text classification pipeline in Python using `pandas`, `matplotlib`, `seaborn`, and `scikit-learn`.
-- Practised text cleaning, stratified train/test splitting, and `CountVectorizer` feature extraction.
-- Established a baseline workflow to compare against transformer models and large language models in later labs.
+bow = CountVectorizer()
+X_train_vec = bow.fit_transform(X_train)
+X_test_vec = bow.transform(X_test)
