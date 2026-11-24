@@ -1,6 +1,7 @@
 # Lab 01: Sentiment Analysis Using Traditional Machine Learning
 
-**Module:** PUSL3205 – Large Language Models and Generative AI  
+**Module:** PUSL3205 – Large Language Models and Generative AI
+
 **Notebook:** [Lab_Sheet_1.ipynb](Lab_Sheet_1.ipynb)
 
 **Dataset Source:** [UCI Machine Learning Repository – Sentiment Labelled Sentences (Dataset 331)](https://archive.ics.uci.edu/dataset/331/sentiment%2Blabelled%2Bsentences)
